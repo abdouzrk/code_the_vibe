@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3-Card Product Gallery — Light / Dark Toggle</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#0ea5a4;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 8px 24px rgba(16,24,40,0.08);
+      --radius: 14px;
+      --transition: 300ms cubic-bezier(.2,.9,.3,1);
+    }
+
+    [data-theme="dark"]{
+      --bg: #0b1020;
+      --card: #0f1724;
+      --muted: #9aa4b2;
+      --accent: #34d399;
+      --glass: rgba(255,255,255,0.03);
+      --shadow: 0 12px 30px rgba(2,6,23,0.6);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,var(--bg),color-mix(in srgb, var(--bg) 92%, black 2%));
+      color: #0b1220;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:48px;
+      transition:background var(--transition), color var(--transition);
+    }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      max-width:1100px;
+      margin:0 auto 28px;
+    }
+
+    .brand{
+      display:flex;gap:14px;align-items:center
+    }
+    .logo{
+      width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:grid;place-items:center;color:white;font-weight:700;box-shadow:var(--shadow)
+    }
+    h1{font-size:20px;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    .controls{display:flex;gap:12px;align-items:center}
+    .toggle{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--glass);backdrop-filter: blur(6px);cursor:pointer;border:1px solid transparent;transition:all var(--transition);
+    }
+    .toggle:active{transform:scale(.98)}
+
+    main{max-width:1100px;margin:0 auto}
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:22px;
+      align-items:start;
+    }
+
+    /* card */
+    .card{
+      background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--card) 96%, black 2%));
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+      transition:transform var(--transition), box-shadow var(--transition), filter var(--transition);
+      transform-origin:center;
+      overflow:hidden;
+      min-height:360px;
+      display:flex;flex-direction:column;gap:12px
+    }
+
+    .card:hover{transform:translateY(-10px) scale(1.02);filter:brightness(1.02);}
+
+    .media{
+      height:200px;border-radius:12px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(135deg,rgba(0,0,0,0.04),rgba(0,0,0,0.01));
+    }
+    .media img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .meta{display:flex;justify-content:space-between;align-items:start}
+    .title{font-weight:600}
+    .price{font-weight:700}
+    .desc{color:var(--muted);font-size:13px;margin-top:6px}
+
+    .actions{margin-top:auto;display:flex;gap:10px;align-items:center}
+    .btn{padding:10px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#06b6d4);color:white;font-weight:600;cursor:pointer;transition:transform var(--transition);}
+    .btn:active{transform:scale(.98)}
+
+    .ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);color:var(--muted);padding:8px 10px;border-radius:10px;cursor:pointer}
+
+    .likes{margin-left:auto;display:flex;gap:8px;align-items:center}
+    .heart{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;cursor:pointer;border:1px solid transparent;background:var(--glass)}
+    .heart.active{background:linear-gradient(90deg,#ff7ab6,#ffb86b);color:white}
+
+    /* fade-in animation */
+    .fade-in{opacity:0;transform:translateY(18px);animation:fadeInUp .6s forwards cubic-bezier(.2,.9,.3,1)}
+    .fade-in[data-delay="1"]{animation-delay:.08s}
+    .fade-in[data-delay="2"]{animation-delay:.16s}
+    .fade-in[data-delay="3"]{animation-delay:.24s}
+
+    @keyframes fadeInUp{
+      to{opacity:1;transform:none}
+    }
+
+    /* responsive */
+    @media (max-width:900px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:640px){
+      body{padding:18px}
+      header{flex-direction:column;align-items:flex-start}
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">PG</div>
+      <div>
+        <h1>Product Gallery</h1>
+        <p class="lead">3-card showcase • hover effects • light/dark theme</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="themeToggle" class="toggle" aria-pressed="false" title="Toggle theme">🌙 <span id="themeLabel">Dark</span></button>
+      <a class="toggle" href="#" id="viewCode" title="Open code (local)">View code</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid" id="gallery">
+
+      <article class="card fade-in" data-delay="1" data-id="p1">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=2b2b2a1b1b5a5f3d" alt="Minimal speaker" />
+        </div>
+        <div class="meta">
+          <div>
+            <div class="title">Auric Speaker</div>
+            <div class="desc">Compact Bluetooth speaker with deep bass and 12h battery.</div>
+          </div>
+          <div class="price">$79</div>
+        </div>
+        <div class="actions">
+          <button class="btn" data-buy>Buy</button>
+          <button class="ghost" aria-label="Details">Details</button>
+          <div class="likes">
+            <button class="heart" aria-pressed="false" title="Add to favorites">♡</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="card fade-in" data-delay="2" data-id="p2">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=0c4b9bf3a5c6c2f9" alt="Smartwatch" />
+        </div>
+        <div class="meta">
+          <div>
+            <div class="title">ChronoLite Watch</div>
+            <div class="desc">Lightweight smartwatch with wellness tracking and 7-day battery.</div>
+          </div>
+          <div class="price">$129</div>
+        </div>
+        <div class="actions">
+          <button class="btn" data-buy>Buy</button>
+          <button class="ghost" aria-label="Details">Details</button>
+          <div class="likes">
+            <button class="heart" aria-pressed="false" title="Add to favorites">♡</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="card fade-in" data-delay="3" data-id="p3">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=6e3f4b5a5c3a1e8d" alt="Headphones" />
+        </div>
+        <div class="meta">
+          <div>
+            <div class="title">Halo Headphones</div>
+            <div class="desc">Over-ear noise-cancelling headphones with studio-grade audio.</div>
+          </div>
+          <div class="price">$199</div>
+        </div>
+        <div class="actions">
+          <button class="btn" data-buy>Buy</button>
+          <button class="ghost" aria-label="Details">Details</button>
+          <div class="likes">
+            <button class="heart" aria-pressed="false" title="Add to favorites">♡</button>
+          </div>
+        </div>
+      </article>
+
+    </section>
+  </main>
+
+  <script>
+    // Theme toggling with localStorage
+    (function(){
+      const btn = document.getElementById('themeToggle');
+      const label = document.getElementById('themeLabel');
+      const root = document.documentElement;
+
+      function setTheme(theme){
+        if(theme === 'dark') document.documentElement.setAttribute('data-theme','dark');
+        else document.documentElement.removeAttribute('data-theme');
+        label.textContent = theme === 'dark' ? 'Dark' : 'Light';
+        btn.setAttribute('aria-pressed', theme === 'dark');
+        localStorage.setItem('pg_theme', theme);
+      }
+
+      const saved = localStorage.getItem('pg_theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      setTheme(saved);
+
+      btn.addEventListener('click', ()=>{
+        const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        setTheme(current === 'dark' ? 'light' : 'dark');
+      });
+    })();
+
+    // Like buttons
+    document.querySelectorAll('.heart').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        const active = btn.classList.toggle('active');
+        btn.setAttribute('aria-pressed', active);
+        btn.textContent = active ? '♥' : '♡';
+      });
+    });
+
+    // Staggered fade-in when cards enter viewport (works if page grows)
+    const observer = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting) entry.target.classList.remove('fade-in');
+      });
+    },{threshold:0.08});
+    document.querySelectorAll('.card').forEach(c=>observer.observe(c));
+
+    // Buy button demo (no real checkout)
+    document.querySelectorAll('[data-buy]').forEach(b=>{
+      b.addEventListener('click', e=>{
+        const card = e.target.closest('.card');
+        const title = card.querySelector('.title').textContent;
+        alert('Added "'+title+'" to your cart — demo only.');
+      });
+    });
+
+    // Optional quick "View code" behavior
+    document.getElementById('viewCode').addEventListener('click', e=>{
+      e.preventDefault();
+      alert('This is a single-file demo. Open/index.html in your editor to modify.');
+    });
+  </script>
+</body>
+</html>
